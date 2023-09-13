@@ -118,7 +118,7 @@ def second_area(symbol, period, duration):
             C1 = C1 / 100000
             solution = solution / 100000
             
-        return dataframe, trend, L2, H2, C2, calibrated_candle_idx, solution
+        return dataframe, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
     elif trend == "DownTrend":
         L1, L2 = format_number(str(planet_one["high"].max())), format_number(str(planet_two["high"].max()))
@@ -137,7 +137,7 @@ def second_area(symbol, period, duration):
             C1 = C1 / 100000
             solution = solution / 100000
             
-        return dataframe, trend, L2, H2, C2, calibrated_candle_idx, solution
+        return dataframe, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
 def x_equation(*args):
     L1, L2, H1, H2, C1, C2 = args
