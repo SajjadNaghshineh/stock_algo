@@ -132,15 +132,15 @@ def find_midline(symbol, period, duration):
         
     return time
 
-def find_start_candle(symbol, period, duration, start, end):
+def find_start_candle(symbol, period, duration):
     time = find_midline(symbol, period, duration)
     time_frame = set_period(period)
     
-    dataframe = mt5.copy_rates_from_pos(symbol, time_frame, start, end)
+    dataframe = mt5.copy_rates_from_pos(symbol, time_frame, 1, 50000)
     dataframe = pd.DataFrame(dataframe)[['time', 'open', 'high', 'low', 'close']]
     dataframe['time'] = pd.to_datetime(dataframe['time'], unit="s")
     
     start_box = dataframe[dataframe['time'] == time]
     start_idx = start_box.index.tolist()[0]
     
-    return start_idx
+    return start_idx, dataframe
