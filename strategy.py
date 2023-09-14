@@ -8,23 +8,8 @@ def first_area(symbol, period, duration):
     
     planet_one, planet_two = dataframe[start_idx:start_idx+26], dataframe[start_idx+26:start_idx+52]
     
-    realL1, realL2 = planet_one["low"].min(), planet_two["low"].min()
-    realH1, realH2 = planet_one["high"].max(), planet_two["high"].max()
+    trend = retrieve_trend(planet_one, planet_two)
     
-    if realH2 > realH1 and realL2 < realL1:
-        H_idx = planet_two[planet_two["high"] == realH2].index.tolist()[0]
-        L_idx = planet_two[planet_two["low"] == realL2].index.tolist()[0]
-        
-        if H_idx > L_idx:
-            trend = "UpTrend"
-        elif L_idx > H_idx:
-            trend = "DownTrend"
-            
-    elif realH2 > realH1 or realL2 > realL1:
-        trend = "UpTrend"
-    elif realH2 < realH1 or realL2 < realL1:
-        trend = "DownTrend"
-        
     if trend == "UpTrend":
         L1, L2 = format_number(str(planet_one["low"].min())), format_number(str(planet_two["low"].min()))
         H1, H2 = format_number(str(planet_one["high"].max())), format_number(str(planet_two["high"].max()))
@@ -50,7 +35,7 @@ def first_area(symbol, period, duration):
         new_dataframe = dataframe[start_idx+52:]
         calibrated_candle_pos = new_dataframe[new_dataframe["close"] >= calibrated_pip_value_pos].index.tolist()[0]
         
-        return calibrated_candle_pos, dataframe
+        return calibrated_candle_pos, trend, dataframe
     
     elif trend == "DownTrend":
         L1, L2 = format_number(str(planet_one["high"].max())), format_number(str(planet_two["high"].max()))
@@ -77,19 +62,15 @@ def first_area(symbol, period, duration):
         new_dataframe = dataframe[start_idx+52:]
         calibrated_candle_neg = new_dataframe[new_dataframe["close"] <= calibrated_pip_value_neg].index.tolist()[0]
         
-        return calibrated_candle_neg, dataframe
+        return calibrated_candle_neg, trend, dataframe
     
-def second_area(symbol, period, duration):
-    calibrated_candle_idx, dataframe = first_area(symbol, period, duration)
-    
-    planet_one, planet_two = dataframe[calibrated_candle_idx-51:calibrated_candle_idx-25], dataframe[calibrated_candle_idx-25:calibrated_candle_idx+1]
-    
-    realL1, realL2 = planet_one["low"].min(), planet_two["low"].min()
-    realH1, realH2 = planet_one["high"].max(), planet_two["high"].max()
+def retrieve_trend(p1, p2):
+    realL1, realL2 = p1["low"].min(), p2["low"].min()
+    realH1, realH2 = p1["high"].max(), p2["high"].max()
     
     if realH2 > realH1 and realL2 < realL1:
-        H_idx = planet_two[planet_two["high"] == realH2].index.tolist()[0]
-        L_idx = planet_two[planet_two["low"] == realL2].index.tolist()[0]
+        H_idx = p2[p2["high"] == realH2].index.tolist()[0]
+        L_idx = p2[p2["low"] == realL2].index.tolist()[0]
         
         if H_idx > L_idx:
             trend = "UpTrend"
@@ -101,6 +82,15 @@ def second_area(symbol, period, duration):
     elif realH2 < realH1 or realL2 < realL1:
         trend = "DownTrend"
         
+    return trend
+
+def second_area(symbol, period, duration):
+    calibrated_candle_idx, trends, dataframe = first_area(symbol, period, duration)
+    
+    planet_one, planet_two = dataframe[calibrated_candle_idx-51:calibrated_candle_idx-25], dataframe[calibrated_candle_idx-25:calibrated_candle_idx+1]
+    
+    trend = retrieve_trend(planet_one, planet_two)
+    
     if trend == "UpTrend":
         L1, L2 = format_number(str(planet_one["low"].min())), format_number(str(planet_two["low"].min()))
         H1, H2 = format_number(str(planet_one["high"].max())), format_number(str(planet_two["high"].max()))
@@ -118,7 +108,7 @@ def second_area(symbol, period, duration):
             C1 = C1 / 100000
             solution = solution / 100000
             
-        return dataframe, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
+        return dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
     elif trend == "DownTrend":
         L1, L2 = format_number(str(planet_one["high"].max())), format_number(str(planet_two["high"].max()))
@@ -137,7 +127,7 @@ def second_area(symbol, period, duration):
             C1 = C1 / 100000
             solution = solution / 100000
             
-        return dataframe, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
+        return dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
 def x_equation(*args):
     L1, L2, H1, H2, C1, C2 = args
