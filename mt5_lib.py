@@ -23,12 +23,16 @@ def set_duration(duration):
         timeframe = mt5.TIMEFRAME_D1
     elif duration == "W1":
         timeframe = mt5.TIMEFRAME_W1
+    elif duration == "MN1":
+        timeframe = mt5.TIMEFRAME_MN1
         
     return timeframe
 
 def set_period(period):
     if period == "M1":
         timeframe = mt5.TIMEFRAME_M1
+    elif period == "M3":
+        timeframe = mt5.TIMEFRAME_M3
     elif period == "M5":
         timeframe = mt5.TIMEFRAME_M5
     elif period == "M15":
@@ -73,6 +77,26 @@ def find_midline(symbol, period, duration):
         next_target_date = utc_from + datetime.timedelta(days=days_until_target)
         
         candles = mt5.copy_rates_range(symbol, time_frame, utc_from, next_target_date)
+        dataframe = pd.DataFrame(candles)[['time', 'open', 'high', 'low', 'close']]
+        dataframe['time'] = pd.to_datetime(dataframe['time'], unit="s")
+        
+    elif term == mt5.TIMEFRAME_MN1:
+        if date.month == 2:
+            if date.year % 4 == 0:
+                date1 = abs(date.day - 29)
+            else:
+                date1 = abs(date.day - 28)
+                
+        elif date.month in (1, 3, 5, 6, 7, 8, 10, 12):
+            date1 = abs(date.day - 31)
+            
+        elif date.month in (4, 9, 11):
+            date1 = abs(date.day - 30)
+            
+        date2 = date.day + date1
+        utc_to = datetime.datetime(date.year, date.month, date2, tzinfo=timezone)
+        
+        candles = mt5.copy_rates_range(symbol, time_frame, utc_from, utc_to)
         dataframe = pd.DataFrame(candles)[['time', 'open', 'high', 'low', 'close']]
         dataframe['time'] = pd.to_datetime(dataframe['time'], unit="s")
         
