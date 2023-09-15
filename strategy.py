@@ -129,6 +129,99 @@ def second_area(symbol, period, duration):
             
         return dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
+def final_result(symbol, period, duration):
+    dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution = second_area(symbol, period, duration)
+    
+    if trend == "UpTrend":
+        candle = dataframe.iloc[calibrated_candle_idx]
+        low = candle["low"]
+
+        new_period = dataframe[calibrated_candle_idx:calibrated_candle_idx+26]
+        H, L = new_period["high"].max(), new_period["low"].min()
+        h_idx, l_idx = new_period[new_period["high"] == H].index.tolist()[0], new_period[new_period["low"] == L].index.tolist()[0]
+        
+        valid_low = low
+        if h_idx < l_idx:
+            if H > H2:
+                pass
+            elif H < H2:
+                if L > low:
+                    pass
+                elif L < low:
+                    valid_low = L
+        elif l_idx < h_idx:
+            if L > low:
+                pass
+            elif L < low:
+                valid_low = L
+        else:
+            valid_low = low
+            
+        valid_low = format_number(str(valid_low))
+        selected_low = abs(valid_low - L1)
+        
+        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low)
+        
+        if symbol == "XAUUSD":
+            C2 = C2 / 100
+            pip_value = pip_value / 100
+        elif "JPY" in symbol:
+            C2 = C2 / 1000
+            pip_value = pip_value / 1000
+        else:
+            C2 = C2 / 100000
+            pip_value = pip_value / 100000
+            
+        level = abs(C1 + pip_value)
+        reach_to = abs(C2 - pip_value)
+        
+        return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
+    
+    elif trend == "DownTrend":
+        candle = dataframe.iloc[calibrated_candle_idx]
+        low = candle["high"]
+
+        new_period = dataframe[calibrated_candle_idx:calibrated_candle_idx+26]
+        H, L = new_period["low"].min(), new_period["high"].max()
+        l_idx, h_idx = new_period[new_period["high"] == L].index.tolist()[0], new_period[new_period["low"] == H].index.tolist()[0]
+        
+        valid_low = low
+        if h_idx < l_idx:
+            if H > H2:
+                if L > low:
+                    pass
+                elif L < low:
+                    valid_low = L
+            elif H < H2:
+                pass
+        elif l_idx < h_idx:
+            if L > low:
+                pass
+            elif L < low:
+                valid_low = L
+        else:
+            valid_low = low
+            
+        valid_low = format_number(str(valid_low))
+        selected_low = abs(valid_low - L1)
+        
+        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low)
+        
+        if symbol == "XAUUSD":
+            C2 = C2 / 100
+            pip_value = pip_value / 100
+        elif "JPY" in symbol:
+            C2 = C2 / 1000
+            pip_value = pip_value / 1000
+        else:
+            C2 = C2 / 100000
+            pip_value = pip_value / 100000
+            
+        level = abs(C1 - pip_value)
+        reach_to = abs(C2 + pip_value)
+        
+        return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
+    
 def x_equation(*args):
     L1, L2, H1, H2, C1, C2 = args
     
@@ -149,7 +242,24 @@ def x_equation(*args):
     return solution
 
 def h_equation(*args):
-    pass
+    L1, L2, H1, H2, C1, C2, solution, selected_low = args
+    
+    numerator = solution - selected_low
+    
+    diff_HL_1, diff_HL_2 = abs(H1 - L1), abs(H2 - L2)
+    deltaC, deltaH, deltaL = abs(C2 - C1), abs(H2 - H1), abs(L2 - L1)
+    sum_deltaC_deltaL, diff_deltaH_deltaL = abs(deltaC + deltaL), abs(deltaH - deltaL)
+    
+    p1, p2, delta = solution / diff_HL_1, solution / diff_HL_2, ((solution + sum_deltaC_deltaL) /diff_deltaH_deltaL)
+    values = p1 + p2 + delta
+    
+    x = sp.symbols("x")
+    equation = sp.Eq(values * x, (numerator + (values * selected_low)))
+    pip_value = sp.solve(equation, x)
+    
+    pip_value = round(eval(str(abs(pip_value[0]))))
+    
+    return pip_value
 
 def format_number(number):
     for num in number:

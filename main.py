@@ -1,6 +1,6 @@
 import mt5_lib
 import settings
-from strategy import second_area
+from strategy import final_result
 
 mt5_lib.run_server(settings.username, settings.password, settings.server, settings.path)
 
@@ -13,12 +13,11 @@ for i in d:
         for z in s:
             try:
                 print(f"{z}, {j}, {i}: ---------------------------------------")
-                print(second_area(z, j, i))
+                print(final_result(z, j, i))
             except:
                 continue
             
-            
-t = ["M15", "M30", "H1", "H2"]
+t = ["M15", "M30"]
 s = ["NZDUSD", "AUDUSD", "USDJPY", "USDCAD", "USDCHF", "CADJPY", "AUDNZD", "CADCHF", "EURNZD", "EURJPY"]
 d = ["W1"]
 
@@ -27,11 +26,11 @@ for i in d:
         for z in s:
             try:
                 print(f"{z}, {j}, {i}: ---------------------------------------")
-                print(second_area(z, j, i))
+                print(final_result(z, j, i))
             except:
                 continue
             
-t = ["H4"]
+t = ["H1", "H2", "H4"]
 s = ["NZDUSD", "AUDUSD", "USDJPY", "USDCAD", "USDCHF", "CADJPY", "AUDNZD", "CADCHF", "EURNZD", "EURJPY"]
 d = ["MN1"]
 
@@ -40,7 +39,7 @@ for i in d:
         for z in s:
             try:
                 print(f"{z}, {j}, {i}: ---------------------------------------")
-                print(second_area(z, j, i))
+                print(final_result(z, j, i))
             except:
                 continue
             
