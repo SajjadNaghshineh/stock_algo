@@ -3,6 +3,31 @@ import pandas as pd
 import sympy as sp
 from mt5_lib import find_start_candle
 
+def change_number(symbol, x, y, action):
+    if action == "div":
+        if symbol == "XAUUSD":
+            x = x / 100
+            y = y / 100
+        elif "JPY" in symbol:
+            x = x / 1000
+            y = y / 1000
+        else:
+            x = x / 100000
+            y = y / 100000
+            
+    elif action == "mul":
+        if symbol == "XAUUSD":
+            x = format_number(str(x))
+            y = format_number(str(y))
+        elif "JPY" in symbol:
+            x = format_number(str(x))
+            y = format_number(str(y))
+        else:
+            x = format_number(str(x))
+            y = format_number(str(y))
+            
+    return x, y
+
 def first_area(symbol, period, duration):
     start_idx, dataframe = find_start_candle(symbol, period, duration)
     
@@ -17,16 +42,8 @@ def first_area(symbol, period, duration):
         
         solution = x_equation(L1, L2, H1, H2, C1, C2)
         
-        if symbol == "XAUUSD":
-            C1 = C1 / 100
-            solution = solution / 100
-        elif "JPY" in symbol:
-            C1 = C1 / 1000
-            solution = solution / 1000
-        else:
-            C1 = C1 / 100000
-            solution = solution / 100000
-            
+        C1, solution = change_number(symbol, C1, solution, "div")
+        
         calibrated_pip_value_pos = C1 + solution
         calibrated_pip_value_pos = str(calibrated_pip_value_pos)
         calibrated_pip_value_pos = calibrated_pip_value_pos[:7]
@@ -44,16 +61,8 @@ def first_area(symbol, period, duration):
         
         solution = x_equation(L1, L2, H1, H2, C1, C2)
         
-        if symbol == "XAUUSD":
-            C1 = C1 / 100
-            solution = solution / 100
-        elif "JPY" in symbol:
-            C1 = C1 / 1000
-            solution = solution / 1000
-        else:
-            C1 = C1 / 100000
-            solution = solution / 100000
-            
+        C1, solution = change_number(symbol, C1, solution, "div")
+        
         calibrated_pip_value_neg = C1 - solution
         calibrated_pip_value_neg = str(calibrated_pip_value_neg)
         calibrated_pip_value_neg = calibrated_pip_value_neg[:7]
@@ -98,16 +107,8 @@ def second_area(symbol, period, duration):
         
         solution = x_equation(L1, L2, H1, H2, C1, C2)
         
-        if symbol == "XAUUSD":
-            C1 = C1 / 100
-            solution = solution / 100
-        elif "JPY" in symbol:
-            C1 = C1 / 1000
-            solution = solution / 1000
-        else:
-            C1 = C1 / 100000
-            solution = solution / 100000
-            
+        C1, solution = change_number(symbol, C1, solution, "div")
+        
         return dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
     elif trend == "DownTrend":
@@ -117,16 +118,8 @@ def second_area(symbol, period, duration):
         
         solution = x_equation(L1, L2, H1, H2, C1, C2)
         
-        if symbol == "XAUUSD":
-            C1 = C1 / 100
-            solution = solution / 100
-        elif "JPY" in symbol:
-            C1 = C1 / 1000
-            solution = solution / 1000
-        else:
-            C1 = C1 / 100000
-            solution = solution / 100000
-            
+        C1, solution = change_number(symbol, C1, solution, "div")
+        
         return dataframe, trends, trend, L1, L2, H1, H2, C1, C2, calibrated_candle_idx, solution
     
 def final_result(symbol, period, duration):
@@ -160,20 +153,14 @@ def final_result(symbol, period, duration):
         valid_low = format_number(str(valid_low))
         selected_low = abs(valid_low - L1)
         
-        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low)
+        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low, symbol)
         
-        if symbol == "XAUUSD":
-            C2 = C2 / 100
-            pip_value = pip_value / 100
-        elif "JPY" in symbol:
-            C2 = C2 / 1000
-            pip_value = pip_value / 1000
-        else:
-            C2 = C2 / 100000
-            pip_value = pip_value / 100000
-            
-        level = abs(C1 + pip_value)
-        reach_to = abs(C2 - pip_value)
+        C2, pip_value = change_number(symbol, C2, pip_value, "div")
+        
+        level = format_number(str(abs(C1 + pip_value)))
+        reach_to = format_number(str(abs(C2 - pip_value)))
+        
+        level, reach_to = change_number(symbol, level, reach_to, "div")
         
         return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
     
@@ -205,20 +192,14 @@ def final_result(symbol, period, duration):
         valid_low = format_number(str(valid_low))
         selected_low = abs(valid_low - L1)
         
-        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low)
+        pip_value = h_equation(L1, L2, H1, H2, C1, C2, solution, selected_low, symbol)
         
-        if symbol == "XAUUSD":
-            C2 = C2 / 100
-            pip_value = pip_value / 100
-        elif "JPY" in symbol:
-            C2 = C2 / 1000
-            pip_value = pip_value / 1000
-        else:
-            C2 = C2 / 100000
-            pip_value = pip_value / 100000
-            
-        level = abs(C1 - pip_value)
-        reach_to = abs(C2 + pip_value)
+        C2, pip_value = change_number(symbol, C2, pip_value, "div")
+        
+        level = format_number(str(abs(C1 - pip_value)))
+        reach_to = format_number(str(abs(C2 + pip_value)))
+        
+        level, reach_to = change_number(symbol, level, reach_to, "div")
         
         return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
     
@@ -242,7 +223,9 @@ def x_equation(*args):
     return solution
 
 def h_equation(*args):
-    L1, L2, H1, H2, C1, C2, solution, selected_low = args
+    L1, L2, H1, H2, C1, C2, solution, selected_low, symbol = args
+    
+    C1, solution = change_number(symbol, C1, solution, "mul")
     
     numerator = solution - selected_low
     
