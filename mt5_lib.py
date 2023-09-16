@@ -2,6 +2,7 @@ import MetaTrader5 as mt5
 import pandas as pd
 import datetime
 import pytz
+from utils import set_duration, set_period
 
 def run_server(username, password, server, path):
     mt5.initialize(
@@ -17,37 +18,6 @@ def run_server(username, password, server, path):
         server=server
     )
     
-
-def set_duration(duration):
-    if duration == "D1":
-        timeframe = mt5.TIMEFRAME_D1
-    elif duration == "W1":
-        timeframe = mt5.TIMEFRAME_W1
-    elif duration == "MN1":
-        timeframe = mt5.TIMEFRAME_MN1
-        
-    return timeframe
-
-def set_period(period):
-    if period == "M1":
-        timeframe = mt5.TIMEFRAME_M1
-    elif period == "M3":
-        timeframe = mt5.TIMEFRAME_M3
-    elif period == "M5":
-        timeframe = mt5.TIMEFRAME_M5
-    elif period == "M15":
-        timeframe = mt5.TIMEFRAME_M15
-    elif period == "M30":
-        timeframe = mt5.TIMEFRAME_M30
-    elif period == "H1":
-        timeframe = mt5.TIMEFRAME_H1
-    elif period == "H2":
-        timeframe = mt5.TIMEFRAME_H2
-    elif period == "H4":
-        timeframe = mt5.TIMEFRAME_H4
-
-    return timeframe
-
 def find_midline(symbol, period, duration):
     term = set_duration(duration)
     time_frame = set_period(period)

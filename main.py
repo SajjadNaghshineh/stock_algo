@@ -1,8 +1,8 @@
-import mt5_lib
+from mt5_lib import run_server
 import settings
 from strategy import final_result
 
-mt5_lib.run_server(settings.username, settings.password, settings.server, settings.path)
+run_server(settings.username, settings.password, settings.server, settings.path)
 
 t = ["M1", "M3", "M5"]
 s = ["NZDUSD", "AUDUSD", "USDJPY", "USDCAD", "USDCHF", "CADJPY", "AUDNZD", "CADCHF", "EURNZD", "EURJPY"]
