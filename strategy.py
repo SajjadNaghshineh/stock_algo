@@ -1,6 +1,3 @@
-import MetaTrader5 as mt5
-import pandas as pd
-import sympy as sp
 from mt5_lib import find_start_candle
 from utils import change_number, retrieve_trend, x_equation, h_equation, format_number
 
@@ -118,7 +115,7 @@ def final_result(symbol, period, duration):
         
         level, reach_to = change_number(symbol, level, reach_to, "div")
         
-        return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
+        return level, reach_to
     
     elif trend == "DownTrend":
         candle = dataframe.iloc[calibrated_candle_idx]
@@ -157,5 +154,5 @@ def final_result(symbol, period, duration):
         
         level, reach_to = change_number(symbol, level, reach_to, "div")
         
-        return level, reach_to, trends, trend, pip_value, C1, C2, valid_low, selected_low
+        return level, reach_to
     
