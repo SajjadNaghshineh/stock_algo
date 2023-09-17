@@ -1,6 +1,8 @@
 import MetaTrader5 as mt5
 import pandas as pd
 import sympy as sp
+import datetime
+import pytz
 
 def set_duration(duration):
     if duration == "D1":
@@ -133,3 +135,55 @@ def format_number(number):
             number = int(number)
             
     return number
+
+def green_or_red(symbol, duration):
+    timeframe = set_duration(duration)
+    
+    candles = mt5.copy_rates_from_pos(symbol, timeframe, 1, 1)
+    dataframe = pd.DataFrame(candles)
+    dataframe['time'] = pd.to_datetime(dataframe['time'], unit='s').dt.date
+    
+    open_value = dataframe['open'].values[0]
+    close_value = dataframe['close'].values[0]
+    date = dataframe["time"].values[0]
+    
+    today = datetime.date.today()
+    timezone = pytz.timezone("Etc/UTC")
+    utc_from = datetime.datetime(date.year, date.month, date.day, tzinfo=timezone)
+    utc_to = datetime.datetime(today.year, today.month, today.day, tzinfo=timezone)
+    
+    if timeframe == mt5.TIMEFRAME_D1:
+        utc_from = utc_from
+        utc_to = utc_to
+        
+    elif timeframe == mt5.TIMEFRAME_W1:
+        target_day = 5
+        days_until_target = (target_day - utc_from.weekday()) % 7
+        next_target_date = utc_from + datetime.timedelta(days=days_until_target)
+        
+        utc_from = utc_from
+        utc_to = next_target_date
+        
+    elif timeframe == mt5.TIMEFRAME_MN1:
+        if date.month == 2:
+            if date.year % 4 == 0:
+                date1 = abs(date.day - 29)
+            else:
+                date1 = abs(date.day - 28)
+                
+        elif date.month in (1, 3, 5, 6, 7, 8, 10, 12):
+            date1 = abs(date.day - 31)
+            
+        elif date.month in (4, 9, 11):
+            date1 = abs(date.day - 30)
+            
+        date2 = date.day + date1
+        utc_from = utc_from
+        utc_to = datetime.datetime(date.year, date.month, date2, tzinfo=timezone)
+        
+    if open_value < close_value:
+        color = "Green"
+    elif close_value < open_value:
+        color = "Red"
+        
+    return color, utc_from, utc_to

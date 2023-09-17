@@ -70,43 +70,6 @@ def find_midline(symbol, period, duration):
         dataframe = pd.DataFrame(candles)[['time', 'open', 'high', 'low', 'close']]
         dataframe['time'] = pd.to_datetime(dataframe['time'], unit="s")
         
-    # start_candle1 = dataframe[dataframe['close'] >= midline]['close'].values.tolist()
-    # start_candle2 = dataframe[dataframe['close'] <= midline]['close'].values.tolist()
-
-    # diff1 = []
-    # for i in start_candle1:
-    #     result = i - midline
-    #     diff1.append(result)
-        
-    # diff2 = []
-    # for i in start_candle2:
-    #     result = midline - i
-    #     diff2.append(result)
-        
-    # near1 = min(diff1)
-    # near2 = min(diff2)
-
-    # real_value1 = diff1.index(near1)
-    # real_value2 = diff2.index(near2)
-
-    # real_price1 = start_candle1[real_value1]
-    # real_price2 = start_candle2[real_value2]
-
-    # candle1 = dataframe[dataframe['close'] == real_price1].index.tolist()[0]
-    # candle2 = dataframe[dataframe['close'] == real_price2].index.tolist()[0]
-
-    # if candle1 < candle2:
-    #     start_point = candle1
-    # elif candle2 < candle1:
-    #     start_point = candle2
-    # else:
-    #     start_point = candle1
-        
-    # point = dataframe.iloc[start_point]
-    # price = point['close']
-    # price = round(price, 5)
-    # time = point['time']
-    
     start_candle = dataframe[dataframe['close'] == midline]
     if start_candle.empty:
         start_candle1 = dataframe[dataframe['close'] >= midline].index.tolist()[0]
