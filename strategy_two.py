@@ -115,7 +115,7 @@ def final_result(symbol, period, duration):
         
         level, reach_to = change_number(symbol, level, reach_to, "div")
         
-        return level, reach_to, trends, trend
+        return level, trend
     
     elif trend == "DownTrend":
         candle = dataframe.iloc[calibrated_candle_idx]
@@ -154,5 +154,5 @@ def final_result(symbol, period, duration):
         
         level, reach_to = change_number(symbol, level, reach_to, "div")
         
-        return level, reach_to, trends, trend
+        return level, trend
     

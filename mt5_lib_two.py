@@ -1,7 +1,5 @@
 import MetaTrader5 as mt5
 import pandas as pd
-import datetime
-import pytz
 from utils import green_or_red, set_period
 
 def run_server(username, password, server, path):
