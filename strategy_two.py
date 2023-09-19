@@ -126,19 +126,19 @@ def final_result(symbol, period, duration):
         l_idx, h_idx = new_period[new_period["high"] == L].index.tolist()[0], new_period[new_period["low"] == H].index.tolist()[0]
         
         valid_low = low
-        if h_idx < l_idx:
-            if H > H2:
-                if L > low:
-                    pass
-                elif L < low:
-                    valid_low = L
-            elif H < H2:
+        if l_idx < h_idx:
+            if L < low:
                 pass
-        elif l_idx < h_idx:
-            if L > low:
-                pass
-            elif L < low:
+            elif L > low:
                 valid_low = L
+        elif h_idx < l_idx:
+            if H < H2:
+                pass
+            elif H > H2:
+                if L < low:
+                    pass
+                elif L > low:
+                    valid_low = L
         else:
             valid_low = low
             
